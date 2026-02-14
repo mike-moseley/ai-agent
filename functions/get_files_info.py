@@ -10,13 +10,13 @@ schema_get_files_info = types.FunctionDeclaration(
         properties={
             "directory": types.Schema(
                 type=types.Type.STRING,
-                description="Directory path to list files from, relative to the working directory (default is the working directory itself)",
+                description="Directory path to list files from, relative to the working directory, (default is the working directory itself which is . or root)",
             ),
         },
     ),
 )
 
-def get_files_info(working_directory, directory):
+def get_files_info(working_directory, directory='.'):
     working_directory = os.path.abspath(working_directory)
     target_directory = os.path.normpath(os.path.join(working_directory, directory))
     valid_target_directory = (

@@ -2,6 +2,7 @@ import os
 import argparse
 from dotenv import load_dotenv
 from call_function import available_functions
+from call_function import call_function
 from google import genai
 from google.genai import types
 from prompts import system_prompt
@@ -36,11 +37,18 @@ def main():
         print(
             f"User prompt: {args.user_prompt} \nPrompt tokens: {response.usage_metadata.prompt_token_count}\nResponse tokens: {response.usage_metadata.candidates_token_count}"
         )
+    function_results = []
     if response.function_calls is not None:
-        for f in response.function_calls:
-            print(f"Calling function: {f.name}({f.args})")
-    else:
-        print(response.text)
+        function_call_result = call_function(response.function_calls[0])
+
+        if function_call_result.parts[0].function_response is None:
+            raise Exception("  Error: {err}")
+
+        if function_call_result.parts[0].function_response.response is None:
+            raise Exception("  Error: {err}")
+
+        if args.verbose:
+            print(f"-> {function_call_result.parts[0].function_response.response}")
 
 
 if __name__ == "__main__":
